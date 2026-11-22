@@ -1,0 +1,24 @@
+# Chromium checkout and build cache
+/chromium/
+/depot_tools/
+/out/
+/.gclient
+/.gclient_entries
+/.cipd/
+/.cache/
+
+# Android and Gradle
+**/.gradle/
+**/app/build/
+local.properties
+
+# Generated packages and signing files
+*.apk
+*.aab
+*.jks
+*.keystore
+
+# Editor files
+.idea/
+.vscode/
+.DS_Store
