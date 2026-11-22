@@ -1,0 +1,76 @@
+name: Unionium Repository Checks
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  repository-checks:
+    name: Validate Repository
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Check required documentation
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          files=(
+            ".gitignore"
+            "docs/PROJECT_PLAN.md"
+            "docs/BRANDING.md"
+            "docs/CHROMIUM_INTEGRATION.md"
+            "docs/BUILD_ENVIRONMENT.md"
+            "docs/UPSTREAM.md"
+            "docs/BUILD_STRATEGY.md"
+            "docs/CHROMIUM_REVISION.md"
+            "docs/ANDROID_TARGET.md"
+            "patches/README.md"
+            "scripts/README.md"
+          )
+
+          for file in "${files[@]}"; do
+            if [ ! -s "$file" ]; then
+              echo "Missing or empty file: $file"
+              exit 1
+            fi
+            echo "OK: $file"
+          done
+
+      - name: Check project directories
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          dirs=(
+            "patches/android"
+            "patches/branding"
+            "patches/browser-ui"
+            "scripts"
+            "assets/icons"
+            "assets/logos"
+            "assets/backgrounds"
+          )
+
+          for dir in "${dirs[@]}"; do
+            test -d "$dir"
+            echo "OK: $dir"
+          done
+
+      - name: Check Markdown files
+        shell: bash
+        run: |
+          set -euo pipefail
+          count=$(find docs patches scripts -type f -name '*.md' | wc -l)
+          if [ "$count" -eq 0 ]; then
+            echo "No Markdown documentation found."
+            exit 1
+          fi
+          echo "Found $count Markdown files."
